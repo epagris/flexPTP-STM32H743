@@ -1,0 +1,3 @@
+[submodule "Src/flexptp"]
+	path = Src/flexptp
+	url = git@epagris.com:epagris/flexPTP-basic.git
