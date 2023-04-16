@@ -86,9 +86,6 @@ a lot of data that needs to be copied, this should be set high. */
    no copy is needed */
 #define LWIP_SUPPORT_CUSTOM_PBUF      1
 
-/* --------- Ethernet hooks --------- */
-#define LWIP_HOOK_UNKNOWN_ETH_PROTOCOL(pbuf,netif) hook_unknown_ethertype(pbuf,netif)
-
 /* ---------- IPv4 options ---------- */
 #define LWIP_IPV4                1
 

@@ -552,25 +552,6 @@ static void CPU_CACHE_Enable(void) {
     //SCB_EnableDCache();
 }
 
-#define ETHERNET_HEADER_LENGTH (14)
-
-err_t hook_unknown_ethertype(struct pbuf *pbuf, struct netif *netif) {
-    // aquire ethertype
-    uint16_t etherType = 0;
-    memcpy(&etherType, ((uint8_t*) pbuf->payload) + 12, 2);
-    etherType = ntohs(etherType);
-    if (etherType == ETHERTYPE_PTP) {
-        // verify Ethernet address
-        if (!memcmp(PTP_ETHERNET_PRIMARY, pbuf->payload, 6) || !memcmp(PTP_ETHERNET_PEER_DELAY, pbuf->payload, 6)) { //
-            ptp_enqueue_msg(((uint8_t*) pbuf->payload) + ETHERNET_HEADER_LENGTH, pbuf->len - ETHERNET_HEADER_LENGTH, pbuf->time_s, pbuf->time_ns, PTP_TP_802_3);
-            pbuf_free(pbuf);
-            return ERR_OK;
-        }
-    }
-
-    return 1;
-}
-
 #ifdef  USE_FULL_ASSERT
 
 /**
