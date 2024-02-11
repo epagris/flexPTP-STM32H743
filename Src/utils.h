@@ -33,6 +33,7 @@
 void MSG(const char *pcString, ...);
 
 #define SPRINTF(str,n,fmt, ...) embfmt(str,n,fmt,__VA_ARGS__)
+#define SNPRINTF(str,n,fmt, ...) embfmt(str,n,fmt,__VA_ARGS__)
 
 #define CLILOG(en, ...) { if (en) MSG(__VA_ARGS__); }
 

@@ -9,6 +9,6 @@
 #include "persistent_storage.h"
 
 #define CONFIG_PTP (1588)
-#define PTP_CONFIG_PTR() ps_load(CONFIG_PTP)
+//#define PTP_CONFIG_PTR() ps_load(CONFIG_PTP)
 
 #endif // FLEXPTP_OPTIONS_H_

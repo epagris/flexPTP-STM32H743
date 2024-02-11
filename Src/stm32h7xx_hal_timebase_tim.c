@@ -145,8 +145,6 @@ void HAL_ResumeTick(void)
     __HAL_TIM_ENABLE_IT(&TimHandle, TIM_IT_UPDATE);
 }
 
-#include "timersync/timersync.h"
-
 /**
  * @brief  Period elapsed callback in non blocking mode
  * @note   This function is called  when TIM6 interrupt took place, inside

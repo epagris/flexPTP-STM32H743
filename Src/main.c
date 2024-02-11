@@ -1,25 +1,3 @@
-/**
- ******************************************************************************
- * @file    LwIP/LwIP_HTTP_Server_Netconn_RTOS/Src/main.c
- * @author  MCD Application Team
- * @brief   This sample code implements a http server application based on
- *          Netconn API of LwIP stack and FreeRTOS. This application uses
- *          STM32H7xx the ETH HAL API to transmit and receive data.
- *          The communication is done with a web browser of a remote PC.
- ******************************************************************************
- * @attention
- *
- * <h2><center>&copy; Copyright (c) 2017 STMicroelectronics.
- * All rights reserved.</center></h2>
- *
- * This software component is licensed by ST under Ultimate Liberty license
- * SLA0044, the "License"; You may not use this file except in compliance with
- * the License. You may obtain a copy of the License at:
- *                             www.st.com/SLA0044
- *
- ******************************************************************************
- */
-
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
@@ -51,13 +29,8 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 
-#define OSC_XTAL (1)
-#define OSC_EXT (2)
-
-#if HSE_VALUE == 16000000UL
-#define OSC_TYPE (OSC_XTAL)
-#else
-#define OSC_TYPE (OSC_EXT)
+#if HSE_VALUE % 2000000UL
+#warning "HSE_VALUE of integer multiples of 2MHz is recommended!"
 #endif
 
 /* Private macro -------------------------------------------------------------*/
@@ -299,8 +272,6 @@ int main(void) {
 
 static void BoardThread(void const *argument);
 
-#include "timersync/timersync.h"
-
 /**
  * @brief  Start Thread
  * @param  argument not used
@@ -323,9 +294,6 @@ static void StartThread(void const *argument) {
 
     /* register task for PTP management */
     reg_task_eth();
-
-    /* initialize timer synchronization */
-    timersync_init();
 
     for (;;) {
         /* Delete the Init Thread */
@@ -422,11 +390,7 @@ static void SystemClock_Config(void) {
     /* Enable HSE Oscillator and activate PLL with HSE as source */
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
 
-#if OSC_TYPE == OSC_XTAL
     RCC_OscInitStruct.HSEState = RCC_HSE_ON; // HSE ON
-#elif OSC_TYPE == OSC_EXT
-	RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS; // HSE BYPASS ON
-#endif
     RCC_OscInitStruct.HSIState = RCC_HSI_OFF;
     RCC_OscInitStruct.CSIState = RCC_CSI_OFF;
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -474,26 +438,6 @@ static void SystemClock_Config(void) {
     /* Enables the I/O Compensation Cell */
     HAL_EnableCompensationCell();
 
-    // get existing settings
-    RCC_PeriphCLKInitTypeDef perClkInit;
-    HAL_RCCEx_GetPeriphCLKConfig(&perClkInit);
-
-    /* Initialize PLL2 */
-    perClkInit.PLL2.PLL2M = HSE_VALUE / 2000000; // 16/10MHz -> 2MHz
-    perClkInit.PLL2.PLL2N = 98; // 2MHz -> 196.608MHz
-    perClkInit.PLL2.PLL2FRACN = 2490; // ...
-    perClkInit.PLL2.PLL2P = 2; // 196.608MHz -> 98.304MHz
-
-    // don't need these outputs, but don't leave them zero
-    perClkInit.PLL2.PLL2Q = 10;
-    perClkInit.PLL2.PLL2R = 10;
-
-    perClkInit.PLL2.PLL2RGE = RCC_PLL1VCIRANGE_1; // Frequency range 1
-    perClkInit.PLL2.PLL2VCOSEL = RCC_PLL2VCOMEDIUM; // Medium-range PLL
-
-    /* Set SAI clock source pll2_p_ck */
-    perClkInit.Sai1ClockSelection = RCC_SAI1CLKSOURCE_PLL2; // modify value for SAI1
-    HAL_RCCEx_PeriphCLKConfig(&perClkInit); // save settings
 }
 
 /**
